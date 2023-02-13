@@ -3,6 +3,7 @@ import axios from 'axios'
 import Student_dashboard from './Student_dashboard'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 
@@ -11,7 +12,9 @@ function Admin_dashboard() {
     const [tutordata, settutordata] = React.useState([])
     const [slotshistory, sethistory] = React.useState([])
 
-
+    const difftoast = (err) => {                  //TOSTER FUNCTION 
+        toast(err);
+      }
     useEffect(() => {
         axios.get('/Student/display')
             .then(response => setstudentdata(response.data)).catch(err => console.log(err))
@@ -22,22 +25,27 @@ function Admin_dashboard() {
 
 
     }, [])
+    const reload=()=>{
+        setTimeout(()=>
+        window.location.reload(),5000)
+    }
     console.log(studentdata)
     console.log(tutordata)
     console.log(slotshistory)
     const removetutor=(ele)=>{
         axios.post('/Tutor/delete',{
             tutor_id:ele._id
-        }).then(response=>console.log(response.data)).catch(err=>console.log(err))
+        }).then(response=>{difftoast(response.data.message);reload()}).catch(err=>console.log(err))
 }
     const removestudent=(ele)=>{
         axios.post('/Student/delete',{
             student_id:ele._id
-        }).then(response=>console.log(response.data)).catch(err=>console.log(err))
+        }).then(response=>{difftoast(response.data.message);reload()}).catch(err=>console.log(err))
 }
 
     return (
         <div style={{ width: "80%", margin: "auto" }}>
+            <ToastContainer/>
             <center>
                 <h3>
                     Admin Dashboard
@@ -129,7 +137,7 @@ function Admin_dashboard() {
                         </thead>
                         <tbody>
                             {
-                                tutordata.map((ele, index) => (
+                                slotshistory.map((ele, index) => (
                                     <tr>
                                         <td>{index + 1}</td>
                                         <td>{ele.s_name}</td>
